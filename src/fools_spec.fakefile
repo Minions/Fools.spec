@@ -1,0 +1,35 @@
+using language fools with [build]
+
+task default.task:
+	pass
+
+task tests.should.pass(ProgramData as program):
+	execute(program:program, args:["--run.tests"]) | this.set_result				#[1],[2]
+
+task tests.should.pass(ProgramData as program):
+	execute.expecting_starvation(timeout:1.seconds, program:program, args:["--run.tests"]) | this.set_result
+
+task build.one.file(file):
+	forward compile.fools.to.command_line_app(files:[file]):			#[3]
+		ProgramData -> this.send
+		TaskResult -> this.set_result
+		* -> log.arbitary.message(severity:3) | discard					#[4],[5]
+
+dependencies:
+	default.task needs:
+		build.one.file(can_execute.fool) | tests.should.pass
+#		build.one.file(starve.fool) | tests.should.starve
+#		build.one.file(can_detect_starvation.fool) | tests.should.pass
+#		build.one.file(verify_platform_basics.fool) | tests.should.pass
+
+
+
+#[1]: the syntax that looks like a function call, in fools means: create a message of the type this address expects, with this value mapping. Send it to that address. Subscribe to all outgoing messages sent by any processors of that message until completion of handling of this message (including any async handling), and route all of those messages to this point in the code (presumably either to a local message map or a message chain).
+
+#[2]: The | operator defines a message chain. It routes all (unless filtered) messages from the thing on the left to the thing on the right. The sent message type must match the expected message type. Any other messages are lifted from the filter chain and sent to the active thunk's unexpected message handler. The default unexpected message handler announces to the user that an unexpected message was seen (and from where to where), then crashes. Tooling can recognize potential unexpected messages at compile-time. This is an error by default, but can be treated as a warning. This can, for example, be used to give exception semmantics.
+
+#[3]: A message-forwarding block takes a message chain and forwards its messages based on a routing table. Messages are forwarded to different chains based on message type. No other discriminators are possible (no value-based routing). Each statement in a forward block consists of a message type, then an arrow, then a message chain. A message-forwarding block is a message chain, so forwards can be nested arbitrarily.
+
+#[4]: Function-call syntax in the middle of a message chain means to do the function callish behavior before executing the filter chain. The processors must send 1+ MessageProcessor messages. Each of these will be placed into the message chain at this point. This is a simple way to get eiher parameterized messsage handling or fan-out/fan-in message handling.
+
+#[5]: * indicates the wildcard route. It is lower priority than any type-specific route. It is optional; its absence is identical to any message chain that doesn't have a handler for a specific message type. Its presence allows routing any otherwise unhandled message. The message will be routed as type Arbitrary.Message (the most general "base class" of all messages), so the handlers must be able to handle Message.Unspecified. `discard` is just a normal message handler. It processes any Arbitrary.Message by no-op (do nothing and send no messges).

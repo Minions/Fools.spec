@@ -1,0 +1,24 @@
+using language fasm
+default human.language en-us
+
+define.string.table:
+	starvation_expected
+
+fill.string.table for en-us:
+	starvation_expected: "Detected the expected starvation. Exiting."
+
+define.named.thunk __.main:
+	reference.thunk test.die_with_success_reason as locals.handler
+	reference.address __.fools.starvation.detected as locals.address
+	create.message __.fools.Subscription as locals.subscribe:
+		listen.for: locals.address
+		when.sent: locals.handler
+	send.message locals.subscribe to __.fools.subscribe.forever
+
+define.named.thunk test.die_with_success_reason:
+	reference.loot __.str.starvation_expected as locals.reason
+	create.message __.platform.command_line.ExitData as locals.exit_data
+		return_code: 0
+		reason: locals.reason
+	send.message locals.exit_data to __.platform.command_line.exit
+

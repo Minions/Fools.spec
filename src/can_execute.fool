@@ -1,0 +1,5 @@
+using language fasm
+
+define.thunk __.main:
+	reference.message __.empty.message as locals.reason
+	send.message locals.reason to __.platform.command_line.exit

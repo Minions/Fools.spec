@@ -1,0 +1,57 @@
+using language fools without [imports]
+
+define.alias cl as __.core.platform.command_line
+define.alias logging as __.core.platform.logging
+import.all.names.from __.fools
+import.all.names.from __.core.messages
+
+in.namespace simple.test:
+	instigating fool try.to.send.output:
+		__.start for AppInitInfo:																	#[1]
+			send SimpleContent to cl.output with.completion this.output_processed:							#[2]
+				content: __.str.passed.1
+				__.async.done: this.output_sent					#[3]
+			send Subscription to subscribe.forever:			# in __.fools.
+				listen.for: starvation.detected					# in __.fools.
+				when.sent: this.print_starvation_info.and_die
+			
+		output_processed for any:												#[4]
+			pass
+
+		output_processed.not_processed:							#[5]
+			send cl.ExitData to cl.exit:
+				return_code: 2
+				reason: __.str.no_output_processor
+
+		output_sent for any:															#[6]
+			send.message __.empty.message to cl.exit
+
+		output_sent.will_not_finish:								#[7]
+			send cl.ExitData to cl.exit:
+				return_code: 2
+				reason: __.str.no_async_done
+
+		print_starvation_info.and_die for StarvationInfo as info:
+			send logging.LogEntry to logging.log:
+				priority: 3
+				event: info.summary
+				context: __.empty.string
+				details: info.diagnostics.__.dump			#[8]
+			send cl.ExitData to cl.exit
+				return_code: 1
+				reason: info.summary
+
+
+#[1]: built-in receiver for instigators. Receives app start message (which you could use to get command-line arguments, but we are ignoring
+#[2]: sending a message to a well-known address and asking for completion. The message system will check whether the sent message is picked up by someone and executed. If so, it will send a message to the completion. If not, it will activate the completion's .not_processed with no message.
+#[3]: using the standard notification mechanism for notification about async completion. cl.output's handler performs its work asynchronously & follows the built-in notification pattern. We want to know when it is done.
+#[4]: will get notified if someone proccesses the message sent to cl.output.
+#[5]: will get activated if no one processes the message sent to cl.output.
+#[6]: will get notified if the async I/O completes.
+#[7]: will get activated if the processor for cl.output never sends a done.
+#[8]: Loot objects have a __.dump property which contains a string representation
+
+strings in en-us:
+	passed.1: "OK. 1 test passed."
+	no_async_done: "Command line output did not send back an I/O completion. Either it never finished or it forgot to notify."
+	no_output_processor: "Command line output not present in platform. No one processed the message."
