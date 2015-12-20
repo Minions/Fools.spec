@@ -1,0 +1,4 @@
+use language fool
+
+instigator thunk assertions:
+	should.be.thunk(actual:some.name)
