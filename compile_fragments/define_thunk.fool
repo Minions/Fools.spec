@@ -1,0 +1,4 @@
+use language fasm
+
+define.thunk some.name:
+	pass
