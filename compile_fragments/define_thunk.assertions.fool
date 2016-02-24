@@ -1,4 +1,8 @@
 use language fool
 
-instigator thunk assertions:
-	should.be.thunk(actual:some.name)
+using verify.core
+using assertions.fluent.core
+
+verify compilation:
+	it finds.thunk:
+		should.be.thunk(actual:some.name)
