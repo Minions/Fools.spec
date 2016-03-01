@@ -1,4 +1,4 @@
 using language fasm
 
 define.thunk __.main:
-	pass
+	pass	# No-op command. Does nothing and required by grammar to indicate that is intentional.

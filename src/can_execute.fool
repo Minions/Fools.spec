@@ -1,5 +1,9 @@
 using language fasm
 
 define.thunk __.main:
-	reference.message __.empty.message as locals.reason
-	send.message locals.reason to __.platform.command_line.exit
+	push.message __.empty.message		#[1]
+	push.address __.platform.command_line.exit
+	send.message	 #[2]
+
+#[1]: Takes a name as an operand. Loads that name, verifies that it is a message, and pushes it onto the stack
+#[2]: Sends the message at stack[1] to the address at stack[0], popping both from the stack. Doesn't push anything
