@@ -1,8 +1,15 @@
 use language fool
 
-using verify.core
-using assertions.fluent.core
+in.namespace compilation:
+	import.names.from: #[1]
+		verify.core all		#[2]
+		assertions.fluent.core all
 
-verify compilation:
-	it finds.thunk:
+	@test		#[3]
+	finds.thunk:
 		should.be.thunk(actual:some.name)
+
+
+#[1]: Reference names that are not defined locally. The referenced names are brought into the scope of the containing block. Note: name imports are not legal outside of a scoping block (e.g., at file scope).
+#[2]: `all` indicates to reference all names (bring them into this namespace). Other options are `just [list]` and `except [list]`.
+#[3]: This is an attribute declaration. The set of attributes is fixed in the language; there is no way to declare a new one. An attribute is a compile-time transform on a thunk or a fool that modifies it in some way, including changing the signature or any of a number of other valid changes. Minions allows definition of new attributes (they are pure functions, so need the function definition ability that Minions adds).
