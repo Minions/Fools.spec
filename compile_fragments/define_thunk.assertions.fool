@@ -4,13 +4,14 @@ specify fasm compilation / thunks and messages:		#[1]
 	import.names.from:	 #[2]
 		assertions.fluent.core all		#[3]
 
-	an empty thunk definition:
+	an empty thunk definition:		#[6]
 		should be findable by name:		#[4]
 			should.be.thunk(actual:some.name)		#[5]
 
 
-#[1]: A specify block is like a namespace, but for specs. It provides a different syntax for describing names (spaces become underscores and slashes become periods). And it also puts everything into a spec namespace, which is outside the message space of the regular code. It might even go into its own city or something (that hasn't been defined yet).
+#[1]: A specify block is like a namespace, but for specs. It provides a different syntax for describing names (spaces become underscores and slashes become periods). And it also puts everything into a spec namespace, which is outside the message space of the regular code. It might even go into its own city or something (that hasn't been defined yet). Also, a specification block extends the set of allowed sub-blocks to include spec paragraphs and verifications.
 #[2]: Reference names that are not defined locally. The referenced names are brought into the scope of the containing block. Note: name imports are not legal outside of a scoping block (e.g., at file scope).
 #[3]: `all` indicates to reference all names (bring them into this namespace). Other options are `just [list]` and `except [list]`.
-#[4]: it.should marks this as a verification block. A verification block's body is compiled as a thunk, but it is registered / referenced / invoked differently - the only way to invoke it is to verify the spec for the compiled result. Also note that a verification block doesn't need type signatures (inbound or outbound messages); all verifications have the same signature (whatever the compiler and verification library agree on at any given moment in time). And the thunk name is the set of all words after it.should, concatenated with underscores. Error reports will just give them with spaces, like in the source.
+#[4]: should marks this as a verification block. A verification block's body is compiled as a thunk, but it is registered / referenced / invoked differently - the only way to invoke it is to verify the spec for the compiled result. Also note that a verification block doesn't need type signatures (inbound or outbound messages); all verifications have the same signature (whatever the compiler and verification library agree on at any given moment in time). And the thunk name is the set of all words after it.should, concatenated with underscores. Error reports will just give them with spaces, like in the source.
 #[5]: One of the assertions defined in assertions.fluent.core.
+#[6]: an marks this as a spec paragraph. It is one section in the spec; it describes one domain entity (which may be one or many code entities).
