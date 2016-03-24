@@ -6,8 +6,8 @@ This is the specification for the Fools mini-language. If your runtime-specific 
 A valid Fools implementation contains the following pieces.
 
 * **Giberish**: language services. Code transformations service. Can compile, refactor, and manage history for chunks of Fools code.
-* **Runtime**: The core VM. Provides runtime constructs to execute code. These are Fools, Secret Messages, Secret Locations, Loot, Cities, and Thunks.
-* **Platform**: Exposes platform services in a uniform way to Fools code.
+* **World**: The core VM. Provides runtime constructs to execute code. These are Fools, Secret Messages, Secret Locations, Loot, Cities, and Thunks.
+* **Platform**: Exposes platform services in a uniform way to Fools code. These services are brought into the World indirectly, via core functionality written in Fools.
 
 Some parts of these components are provided directly by the implementation. Some are written in Fools and compiled into the implementation.
 
@@ -41,9 +41,9 @@ The bootstrapped version of this project is not actually written in Fools, or ev
 
 1. Subscribe to all messages sent by processors at `thunk.address` for processing of a single message.
 2. Send `initial.message` to `thunk.address`
-3. Cancel propagation of any messages to any named addresses.
+3. During execution, capture any messages to any named addresses (and prevent propagation).
 4. Verify that the set of messages sent equals the set `{result.sends}`. As in, exactly the same elements, based on send equality.
-	* A send is the type {sent: Message, to: Maybe<Address>}.
+	* A send is the type `{sent: Message, to: Maybe<Address>}`.
 
 This is parallel-safe as long as the first 2 steps are performed as a single operation. Your message queue should support a `send.and.subscribe.to.results` operation, as this will be required eventually for a valid fools implementation.
 
