@@ -1,4 +1,5 @@
 use language fasm
 
-define.named.thunk some.name:
-	pass
+namespace all_the_names:
+	define.named.thunk some.thunk:
+		pass
