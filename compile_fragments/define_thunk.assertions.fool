@@ -1,7 +1,7 @@
 use language fools
 
 specify fasm compilation / thunks and messages:		#[1]
-	import.names.from:	 #[2]
+	import.names.from:		#[2]
 		assertions.fluent.core (all)		#[3]
 		all_the_names (as.namespace)
 
@@ -28,4 +28,4 @@ specify fasm compilation / thunks and messages:		#[1]
 	2. Send the message to the named box for a thunk.
 	3. During execution, capture all outbound messages.
 	4. Bind values from outgoing messages to locals as specified in the expression (not used here - assertions are TDA functions).
-#8: Note: all functions within a verification block will be bound with a test context, if they have an argument of that type. Thus you don't have to specify the test context to an assertion function.
+#[8]: Note: all functions within a verification block will be bound with a test context, if they have an argument of that type. Thus you don't have to specify the test context to an assertion function.
